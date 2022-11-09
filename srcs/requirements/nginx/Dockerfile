@@ -1,15 +1,20 @@
 #Base Image
 FROM debian:buster
 
-#
 EXPOSE 80/tcp
 
-#
-RUN apt-get -y update && apt-get upgrade -y --no-install-recommends \
-	&& apt-get install -y nginx && apt-get install -y nano
+RUN apt-get -y update 			&& \
+	apt-get install -y nginx 	&& \
+	apt-get -y install openssl
 
-COPY ./default etc/nginx/sites-available/default
-COPY .	/nginx.conf etc/nginx/nginx.conf
+# RUN apt-get -y install openssl && bash generateSSL.sh
+
+COPY ./conf/ etc/nginx/
+
+RUN  bash ./etc/nginx/generateSSL.sh
+
+# COPY ./conf/default etc/nginx/sites-available/default
+# COPY ./conf/nginx.conf etc/nginx/nginx.conf
 
 #
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
