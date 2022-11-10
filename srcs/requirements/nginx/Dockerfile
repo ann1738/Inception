@@ -17,4 +17,4 @@ RUN  bash ./etc/nginx/generateSSL.sh
 # COPY ./conf/nginx.conf etc/nginx/nginx.conf
 
 #
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "'daemon off;'"]
