@@ -1,11 +1,15 @@
 #!/bin/bash
 
 DOMAIN="anasr"
-SSL_DIR="/etc/nginx"
+SSL_DIR="/etc/nginx/ssl"
 KEY_FILE="$SSL_DIR/$DOMAIN.key"
 CSR_FILE="$SSL_DIR/$DOMAIN.csr"
 CRT_FILE="$SSL_DIR/$DOMAIN.crt"
-CONF_FILE="$SSL_DIR/csrDetails.conf"
+CONF_FILE="/etc/nginx/csrDetails.conf"
+
+#Create an SSL Directory 
+mkdir -p $SSL_DIR
+chmod 700 $SSL_DIR
 
 #Generate the key pair
 openssl genrsa -out $KEY_FILE 2048 2>/dev/null

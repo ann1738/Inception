@@ -10,4 +10,5 @@ COPY conf/ etc/nginx/
 
 RUN  bash /etc/nginx/generateSSL.sh
 
+# CMD ["nginx", "-t"]
 CMD ["nginx", "-g", "daemon off;"]
