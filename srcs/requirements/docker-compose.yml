@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+#NGINX
+  nginx:
+    build: ./nginx/
+    ports:
+      - "443:443"
+    restart: always
+    networks:
+      - wp-net
+    volumes:
+      - wp-db:/var/lib/wpDB
+
+#WordPress
+  wordpress:
+    # build: ./wordpress/
+    depends_on:
+      # - mariadb
+      - nginx
+    image: wordpress:php8.1-fpm
+    restart: always
+    volumes:
+      - wp-db:/var/www/html
+    # environment:
+    #   WORDPRESS_DB_HOST: mariadb:3306
+    #   WORDPRESS_DB_USER: superPowerRanger
+    #   WORDPRESS_DB_PASSWORD: password
+    networks:
+      - wp-net
+    
+# #MARIADB
+#   mariadb:
+#     image: mysql:5.7
+#     volumes:
+#       - data-db:/var/lib/mysql
+#     restart: always
+#     ports:
+#       - "3306:3306"
+#     environment:
+#       MYSQL_ROOT_PASSWORD: "password"
+#       MYSQL_DATABASE: "wp"
+#       MYSQL_DATABASE_USER: "superPowerRanger"
+#       MYSQL_PASSWORD: "password"
+#     networks:
+#       - wp-net
+  
+
+  # mariadb:
+  #   build: ./mariadb/
+  #   ports:
+  #     -  "3306:3306"
+  #   restart: always
+  #   networks:
+  #     - database
+  #   volumes:
+  #     - DB
+
+networks:
+  wp-net:
+  # webserver: {}
+  # database: {}
+
+volumes:
+  wp-db:
+  data-db:
+        # driver: host
+        # driver_opts:
+        #     source: /Home/ann/data
+#I need to figure out how to define the path of the host mount
