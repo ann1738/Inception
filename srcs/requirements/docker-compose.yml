@@ -6,28 +6,38 @@ services:
     build: ./nginx/
     ports:
       - "443:443"
-    restart: always
-    networks:
-      - wp-net
+    restart: on-failure
     volumes:
-      - wp-db:/var/lib/wpDB
+      - www-duck-data:/var/www/html
+    networks:
+      - duck
+    depends_on:
+      - wordpress
 
 #WordPress
   wordpress:
-    # build: ./wordpress/
-    depends_on:
-      # - mariadb
-      - nginx
-    image: wordpress:php8.1-fpm
-    restart: always
+    build: ./wordpress/
+
+    restart: on-failure
     volumes:
-      - wp-db:/var/www/html
-    # environment:
-    #   WORDPRESS_DB_HOST: mariadb:3306
-    #   WORDPRESS_DB_USER: superPowerRanger
-    #   WORDPRESS_DB_PASSWORD: password
+      - www-duck-data:/var/www/html
     networks:
-      - wp-net
+      - duck
+    expose:
+      - 9000
+    entrypoint: "/bin/bash -c php-fpm7.3"
+
+# [17-Nov-2022 16:35:09] ERROR: [/etc/php/7.3/fpm/pool.d/wordpress_pool.conf:1] value is NULL for a ZEND_INI_PARSER_ENTRY
+# [17-Nov-2022 16:35:09] ERROR: Unable to include /etc/php/7.3/fpm/pool.d/wordpress_pool.conf from /etc/php/7.3/fpm/php-fpm.conf at line 1
+# [17-Nov-2022 16:35:09] ERROR: failed to load configuration file '/etc/php/7.3/fpm/php-fpm.conf'
+# [17-Nov-2022 16:35:09] ERROR: FPM initialization failed
+
+  #   # environment:
+  #   #   WORDPRESS_DB_HOST: mariadb:3306
+  #   #   WORDPRESS_DB_USER: superPowerRanger
+  #   #   WORDPRESS_DB_PASSWORD: password
+  #   networks:
+  #     - wp-net
     
 # #MARIADB
 #   mariadb:
@@ -45,25 +55,14 @@ services:
 #     networks:
 #       - wp-net
   
-
-  # mariadb:
-  #   build: ./mariadb/
-  #   ports:
-  #     -  "3306:3306"
-  #   restart: always
-  #   networks:
-  #     - database
-  #   volumes:
-  #     - DB
-
 networks:
-  wp-net:
+  duck:
+#   wp-net:
   # webserver: {}
   # database: {}
 
 volumes:
-  wp-db:
-  data-db:
+  www-duck-data:
         # driver: host
         # driver_opts:
         #     source: /Home/ann/data
