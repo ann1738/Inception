@@ -1,3 +1,4 @@
+#WORDPRESS DOCKERFILE
 FROM debian:buster
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -10,7 +11,8 @@ RUN apt-get -y	update && \
 						wget				\
 						ca-certificates		\
 						dialog			\
-						mariadb-client
+						mariadb-client \
+						php-mysqli
 
 RUN	groupadd wordpress_user						&& \
 	useradd -g wordpress_user wordpress_user
@@ -20,6 +22,11 @@ RUN apt-get -y install net-tools nano
 ENV DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 9000/tcp
+
+
+COPY ./www.conf /etc/php/7.3/fpm/pool.d/
+
+# RUN service php7.3-fpm start
 
 # COPY ./wordpress_pool.conf /etc/php/7.3/fpm/pool.d/
 
