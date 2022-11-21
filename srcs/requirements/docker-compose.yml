@@ -28,6 +28,8 @@ services:
       - 9000
     command: "'service php7.3-fpm start && tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
+    depends_on:
+      - mariadb
 
   #   # environment:
   #   #   WORDPRESS_DB_HOST: mariadb:3306
