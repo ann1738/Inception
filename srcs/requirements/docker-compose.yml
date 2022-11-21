@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-#NGINX
+# NGINX
   nginx:
     build: ./nginx/
     ports:
@@ -14,55 +14,55 @@ services:
     depends_on:
       - wordpress
 
-#WordPress
+# WordPress
   wordpress:
     build: ./wordpress/
-
     restart: on-failure
     volumes:
       - www-duck-data:/var/www/html
+      - db-duck-data:/var/lib/mysql
     networks:
       - duck
+      - turtle
     expose:
       - 9000
-    entrypoint: "/bin/bash -c php-fpm7.3"
-
-# [17-Nov-2022 16:35:09] ERROR: [/etc/php/7.3/fpm/pool.d/wordpress_pool.conf:1] value is NULL for a ZEND_INI_PARSER_ENTRY
-# [17-Nov-2022 16:35:09] ERROR: Unable to include /etc/php/7.3/fpm/pool.d/wordpress_pool.conf from /etc/php/7.3/fpm/php-fpm.conf at line 1
-# [17-Nov-2022 16:35:09] ERROR: failed to load configuration file '/etc/php/7.3/fpm/php-fpm.conf'
-# [17-Nov-2022 16:35:09] ERROR: FPM initialization failed
+    command: "'service php7.3-fpm start && tail -f /dev/null'"
+    entrypoint: "/bin/sh -c"
 
   #   # environment:
   #   #   WORDPRESS_DB_HOST: mariadb:3306
   #   #   WORDPRESS_DB_USER: superPowerRanger
   #   #   WORDPRESS_DB_PASSWORD: password
-  #   networks:
-  #     - wp-net
-    
-# #MARIADB
-#   mariadb:
-#     image: mysql:5.7
-#     volumes:
-#       - data-db:/var/lib/mysql
-#     restart: always
-#     ports:
-#       - "3306:3306"
-#     environment:
-#       MYSQL_ROOT_PASSWORD: "password"
-#       MYSQL_DATABASE: "wp"
-#       MYSQL_DATABASE_USER: "superPowerRanger"
-#       MYSQL_PASSWORD: "password"
-#     networks:
-#       - wp-net
-  
+
+# MARIADB
+  mariadb:
+    build: ./mariadb
+    volumes:
+      - db-duck-data:/var/lib/mysql
+    restart: on-failure
+    env_file:
+      - .env
+    expose:
+      - 3306  
+    environment:
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+      # MARIADB_DATABASE: "${MARIADB_DATABASE}"
+      # MARIADB_USER: "${MARIADB_USER}"
+      # MARIADB_PASSWORD: "${MARIADB_PASSWORD}"
+    networks:
+      - turtle
+    command: "'service mysql start && mysql -uroot -ppassword < init.sql && tail -f /var/log/mysql/error.log'"
+    entrypoint: "/bin/sh -c"
+
 networks:
+# frontend
   duck:
-#   wp-net:
-  # webserver: {}
-  # database: {}
+# backend
+  turtle:
 
 volumes:
   www-duck-data:
+  db-duck-data:
         # driver: host
         # driver_opts:
         #     source: /Home/ann/data
