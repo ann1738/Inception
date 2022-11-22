@@ -3,7 +3,7 @@ version: '3'
 services:
 # NGINX
   nginx:
-    build: ./nginx/
+    build: ./requirements/nginx/
     ports:
       - "443:443"
     restart: on-failure
@@ -16,7 +16,7 @@ services:
 
 # WordPress
   wordpress:
-    build: ./wordpress/
+    build: ./requirements/wordpress/
     restart: on-failure
     volumes:
       - www-duck-data:/var/www/html
@@ -26,19 +26,18 @@ services:
       - turtle
     expose:
       - 9000
-    command: "'service php7.3-fpm start && tail -f /dev/null'"
+    env_file:
+      - .env
+    command: "'service php7.3-fpm start   && \
+               bash init.sh ${WP_DBNAME} ${WP_DBPASS} ${WP_DBUSER} ${WP_DBHOST} && \
+               tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - mariadb
 
-  #   # environment:
-  #   #   WORDPRESS_DB_HOST: mariadb:3306
-  #   #   WORDPRESS_DB_USER: superPowerRanger
-  #   #   WORDPRESS_DB_PASSWORD: password
-
 # MARIADB
   mariadb:
-    build: ./mariadb
+    build: ./requirements/mariadb/
     volumes:
       - db-duck-data:/var/lib/mysql
     restart: on-failure
@@ -48,24 +47,25 @@ services:
       - 3306  
     environment:
       MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
-      # MARIADB_DATABASE: "${MARIADB_DATABASE}"
-      # MARIADB_USER: "${MARIADB_USER}"
-      # MARIADB_PASSWORD: "${MARIADB_PASSWORD}"
     networks:
       - turtle
-    command: "'service mysql start && mysql -uroot -ppassword < init.sql && tail -f /var/log/mysql/error.log'"
+    command: "'service mysql start && \
+               mysql -uroot -ppassword < init.sql && \
+               tail -f /var/log/mysql/error.log'"
     entrypoint: "/bin/sh -c"
 
 networks:
 # frontend
   duck:
+
 # backend
   turtle:
 
 volumes:
   www-duck-data:
   db-duck-data:
-        # driver: host
-        # driver_opts:
-        #     source: /Home/ann/data
-#I need to figure out how to define the path of the host mount
+    # driver: local
+    # driver_opts:
+    #   type: 'volume'  
+    #   o: 'bind'
+    #   device: '/home/ann/data/db-duck-data-volume'
