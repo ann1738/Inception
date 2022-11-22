@@ -1,7 +1,15 @@
+#Welcome to my Makefile
 DOCKER_COMPOSE_FILE_PATH = ./srcs/docker-compose.yml
+
 NGINX_CONTAINER_DEFAULT_NAME = srcs-nginx-1
-WORDPRESS_CONTAINER_DEFAULT_NAME = srcs-worpress-1
+WORDPRESS_CONTAINER_DEFAULT_NAME = srcs-wordpress-1
 MARIADB_CONTAINER_DEFAULT_NAME = srcs-mariadb-1
+
+ADD_DOMAIN_SCRIPT_PATH = ./srcs/requirements/tools/addDomain.sh
+REMOVE_CONTAINERS_SCRIPT_PATH = ./srcs/requirements/tools/removeContainers.sh
+REMOVE_NETWORKS_SCRIPT_PATH = ./srcs/requirements/tools/removeNetworks.sh
+REMOVE_VOLUMES_SCRIPT_PATH = ./srcs/requirements/tools/removeVolumes.sh
+CUSTOM_ALIASES_SCRIPT_PATH = ./srcs/requirements/tools/customAliases.sh
 
 all: start
 
@@ -44,3 +52,7 @@ wordpress-exec:
 
 mariadb-exec:
 	docker exec -it ${MARIADB_CONTAINER_DEFAULT_NAME} bash
+
+#Custom rules
+aliases:
+	@bash ./srcs/requirements/tools/customAliases.sh
