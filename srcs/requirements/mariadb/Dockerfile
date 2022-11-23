@@ -1,6 +1,10 @@
 #MARIADB DOCKERFILE
 FROM debian:buster
 
+ARG MARIADB_DATABASE
+ARG MARIADB_USER
+ARG MARIADB_PASSWORD
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update \
@@ -10,15 +14,13 @@ RUN apt-get -y update \
 
 #To configure the server to connect with the wordpress container
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
-COPY ./conf/init.sql /
 
-# RUN "service mysql start && mysql -uroot -ppassword < init.sql"
+RUN service mysql start && \
+	mysql -e "CREATE DATABASE IF NOT EXISTS ${MARIADB_DATABASE}; \
+	CREATE USER IF NOT EXISTS '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD'; \
+	GRANT ALL PRIVILEGES ON $MARIADB_DATABASE.* TO '$MARIADB_USER'; \
+	UPDATE mysql.user SET host='%' WHERE user='root'; \
+	FLUSH PRIVILEGES;"
+
 
 ENV DEBIAN_FRONTEND=dialog
-
-
-# ENTRYPOINT ["service mysql start"]
-# ENTRYPOINT ["tail -f /dev/null"]
-# CMD ["service mysql start && mysqld"]
-#mysqld --socket=wordpress --port=3306
-# ENTRYPOINT ["service mysql start && tail -f /dev/null"]

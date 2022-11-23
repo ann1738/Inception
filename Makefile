@@ -23,6 +23,8 @@ start_verbose: add_domain
 build:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} build
 
+res: clear_all build start_verbose
+
 end:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} down
 

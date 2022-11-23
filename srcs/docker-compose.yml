@@ -37,21 +37,23 @@ services:
 
 # MARIADB
   mariadb:
-    build: ./requirements/mariadb/
+    build:
+      context: ./requirements/mariadb/
+      args:
+        MARIADB_DATABASE: ${MARIADB_DATABASE}
+        MARIADB_USER: ${MARIADB_USER}
+        MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - db-duck-data:/var/lib/mysql
     restart: on-failure
     env_file:
       - .env
     expose:
-      - 3306  
-    environment:
-      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+      - 3306
     networks:
       - turtle
     command: "'service mysql start && \
-               mysql -uroot -ppassword < init.sql && \
-               tail -f /var/log/mysql/error.log'"
+              tail -f /var/log/mysql/error.log'"
     entrypoint: "/bin/sh -c"
 
 networks:
