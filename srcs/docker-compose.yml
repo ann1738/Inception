@@ -29,7 +29,8 @@ services:
     env_file:
       - .env
     command: "'service php7.3-fpm start   && \
-               bash init.sh ${WP_DBNAME} ${WP_DBPASS} ${WP_DBUSER} ${WP_DBHOST} && \
+               /bin/sleep 5 && \ 
+               bash init.sh && \
                tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
     depends_on:
