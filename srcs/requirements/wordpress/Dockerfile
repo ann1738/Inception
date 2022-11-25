@@ -22,42 +22,17 @@ RUN	wget http://wordpress.org/latest.tar.gz && \
 	mv wordpress/* ./ && \
 	rm -f latest.tar.gz && \
 	rm -f index.html && \
-	# cp wp-config-sample.php wp-config.php && \
-	#install wp-cli
+	#Install wp-cli
 	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 	php wp-cli.phar --info && \
 	chmod +x wp-cli.phar && \
-	mv wp-cli.phar /usr/local/bin/wp 
-
-RUN apt-get -y install net-tools nano
+	mv wp-cli.phar /usr/local/bin/wp && \
+	service php7.3-fpm start    
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-EXPOSE 9000/tcp
 
 WORKDIR /
 
 COPY ./www.conf /etc/php/7.3/fpm/pool.d/
 COPY ./init.sh /
-
-# RUN service php7.3-fpm start
-
-# COPY ./wordpress_pool.conf /etc/php/7.3/fpm/pool.d/
-
-
-
-
-
-
-# RUN mkdir -p /var/www/html/anasr.42.fr/src		&& \
-# 	cd /var/www/html/anasr.42.fr/src			&& \
-# 	wget https://wordpress.org/latest.tar.gz	&& \
-# 	tar -xvf latest.tar.gz						&& \
-# 	# mv wordpress/* ../public_html/				&& \
-# 	chown -R www-data:www-data /var/www/html/anasr.42.fr && \
-	# #Install WP-CLI
-	# wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	# #Change permissions and move to /bin such that we can use wp as a command 
-	# chmod +x wp-cli.phar 				&& \
-	# mv wp-cli.phar /usr/local/bin/wp	&& \
-	# wp --info
+COPY ./php.ini /etc/php/7.3/fpm/

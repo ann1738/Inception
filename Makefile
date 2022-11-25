@@ -26,7 +26,6 @@ start_verbose: add_domain create_volume_directories
 build:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} build
 
-res: clear_all build start_verbose
 
 end:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} down
@@ -37,7 +36,9 @@ down: end
 
 clear_all: containers_rm volumes_rm networks_rm remove_volume_directories
 
-re: clear_all start_verbose
+re: end clear_all start_verbose
+
+res: end clear_all build start_verbose
 
 create_volume_directories: create_www_vol_directory create_db_vol_directory
 

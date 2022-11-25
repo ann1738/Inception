@@ -4,13 +4,13 @@ services:
 # NGINX
   nginx:
     build: ./requirements/nginx/
+    restart: on-failure
     ports:
       - "443:443"
-    restart: on-failure
-    volumes:
-      - www-duck-data:/var/www/html
     networks:
       - duck
+    volumes:
+      - www-duck-data:/var/www/html
     depends_on:
       - wordpress
 
@@ -18,25 +18,25 @@ services:
   wordpress:
     build: ./requirements/wordpress/
     restart: on-failure
-    volumes:
-      - www-duck-data:/var/www/html
-      - db-duck-data:/var/lib/mysql
     networks:
       - duck
       - turtle
-    expose:
-      - 9000
+    volumes:
+      - www-duck-data:/var/www/html
+      - db-duck-data:/var/lib/mysql
     env_file:
       - .env
-    command: "'service php7.3-fpm start   && \
-               /bin/sleep 5 && \ 
-               bash init.sh && \
-               tail -f /dev/null'"
+    expose:
+      - 9000
+    command:
+      "'  /bin/sleep 5 && \
+          bash init.sh && \ 
+          php-fpm7.3 --nodaemonize -R'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - mariadb
 
-# MARIADB
+# Mariadb
   mariadb:
     build:
       context: ./requirements/mariadb/
@@ -44,31 +44,32 @@ services:
         MARIADB_DATABASE: ${MARIADB_DATABASE}
         MARIADB_USER: ${MARIADB_USER}
         MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    restart: on-failure
+    networks:
+      - turtle
     volumes:
       - db-duck-data:/var/lib/mysql
-    restart: on-failure
     env_file:
       - .env
     expose:
       - 3306
-    networks:
-      - turtle
-    command: "'service mysql start && \
-              tail -f /var/log/mysql/error.log'"
+    command: "'mysqld'"
     entrypoint: "/bin/sh -c"
 
 networks:
-# frontend
-  duck:
-
-# backend
-  turtle:
+  duck: #frontend
+  turtle: # backend
 
 volumes:
   www-duck-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/ann/data/www_volume
   db-duck-data:
-    # driver: local
-    # driver_opts:
-    #   type: 'volume'  
-    #   o: 'bind'
-    #   device: '/home/ann/data/db-duck-data-volume'
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/ann/data/db_volume
