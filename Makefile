@@ -1,4 +1,6 @@
 #Welcome to my Makefile
+
+#Variables
 DOCKER_COMPOSE_FILE_PATH = ./srcs/docker-compose.yml
 
 NGINX_CONTAINER_DEFAULT_NAME = srcs-nginx-1
@@ -14,6 +16,12 @@ CUSTOM_ALIASES_SCRIPT_PATH = ./srcs/requirements/tools/customAliases.sh
 WWW_VOLUME_PATH = /home/${USER}/data/www_volume
 DB_VOLUME_PATH = /home/${USER}/data/db_volume
 
+#Bonus variables
+BONUS_DOCKER_COMPOSE_FILE_PATH = ./srcs/docker-compose-bonus.yml
+
+FTP_CONTAINER_DEFAULT_NAME = srcs-ftp-1
+REDIS_CONTAINER_DEFAULT_NAME = srcs-redis-1
+
 all: start
 
 #Operation rules
@@ -25,7 +33,6 @@ start_verbose: add_domain create_volume_directories
 
 build:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} build
-
 
 end:
 	docker compose --file ${DOCKER_COMPOSE_FILE_PATH} down
@@ -82,3 +89,33 @@ mariadb-exec:
 #Custom rules
 aliases:
 	@bash ./srcs/requirements/tools/customAliases.sh
+
+#Bonus rules
+start_bonus: add_domain create_volume_directories
+	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} up  --detach
+
+start_verbose_bonus: add_domain create_volume_directories
+	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} up
+
+build_bonus:
+	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} build
+
+end_bonus:
+	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} down
+
+up_bonus: start_verbose_bonus
+
+down_bonus: end_bonus
+
+clear_all: containers_rm volumes_rm networks_rm remove_volume_directories
+
+re_bonus: end_bonus clear_all start_verbose_bonus
+
+res_bonus: end_bonus clear_all build_bonus start_verbose_bonus
+
+#Bonus container access rules
+ftp-exec:
+	docker exec -it ${FTP_CONTAINER_DEFAULT_NAME} bash
+
+redis-exec:
+	docker exec -it ${REDIS_CONTAINER_DEFAULT_NAME} bash
