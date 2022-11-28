@@ -1,0 +1,105 @@
+version: '3'
+
+services:
+# NGINX
+  nginx:
+    build: ./requirements/nginx/
+    restart: on-failure
+    ports:
+      - "443:443"
+    networks:
+      - duck
+    volumes:
+      - www-duck-data:/var/www/html
+    depends_on:
+      - wordpress
+
+# WordPress
+  wordpress:
+    build:
+      context: ./requirements/wordpress/
+      args:
+        BONUS: one
+    restart: on-failure
+    networks:
+      - duck
+      - turtle
+      - bonus
+    volumes:
+      - www-duck-data:/var/www/html
+      - db-duck-data:/var/lib/mysql
+    env_file:
+      - .env
+
+    expose:
+      - 9000
+    command:
+      "'  /bin/sleep 5 && \
+          bash init.sh bonus && \ 
+          php-fpm7.3 --nodaemonize -R'"
+    entrypoint: "/bin/sh -c"
+    depends_on:
+      - mariadb
+
+# Mariadb
+  mariadb:
+    build:
+      context: ./requirements/mariadb/
+      args:
+        MARIADB_DATABASE: ${MARIADB_DATABASE}
+        MARIADB_USER: ${MARIADB_USER}
+        MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    restart: on-failure
+    networks:
+      - turtle
+    volumes:
+      - db-duck-data:/var/lib/mysql
+    env_file:
+      - .env
+    expose:
+      - 3306
+    command: "'mysqld'"
+    entrypoint: "/bin/sh -c"
+
+# redis
+  redis:
+    build: ./requirements/bonus/redis/
+    restart: on-failure
+    expose:
+      - 6379
+    command: "'redis-server'"
+    networks:
+      - bonus
+    entrypoint: "/bin/sh -c"
+    depends_on:
+      - wordpress
+
+# ftp service
+  ftp:
+    build: ./requirements/bonus/ftp/
+    restart: on-failure
+    volumes:
+      - www-duck-data:/var/www/html
+    ports:
+      - "21:21"
+    command: "'tail -f /dev/null'"
+    entrypoint: "/bin/sh -c"
+
+networks:
+  duck: #frontend
+  turtle: # backend
+  bonus: #redis and wordpress
+
+volumes:
+  www-duck-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/ann/data/www_volume
+  db-duck-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/ann/data/db_volume
