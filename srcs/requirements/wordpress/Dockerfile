@@ -1,6 +1,8 @@
 #WORDPRESS DOCKERFILE
 FROM debian:buster
 
+ARG BONUS
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y	update && \
@@ -29,10 +31,15 @@ RUN	wget http://wordpress.org/latest.tar.gz && \
 	mv wp-cli.phar /usr/local/bin/wp && \
 	service php7.3-fpm start    
 
+RUN /bin/bash -c 'if [[ "${BONUS}" == "one" ]] ; then apt-get install -y adminer; fi' &&\
+	apt-get autoremove &&\
+	apt-get autoclean &&\
+	apt-get clean
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /
 
-COPY ./www.conf /etc/php/7.3/fpm/pool.d/
-COPY ./init.sh /
-COPY ./php.ini /etc/php/7.3/fpm/
+COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d/
+COPY ./tools/init.sh /
+COPY ./conf/php.ini /etc/php/7.3/fpm/

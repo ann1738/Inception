@@ -12,12 +12,16 @@ RUN apt-get -y update 			&& \
 						dialog
 # COPY conf/ etc/nginx/
 COPY conf/nginx.conf /etc/nginx/
-COPY conf/generateSSL.sh /etc/nginx/
+COPY tools/generateSSL.sh /etc/nginx/
 COPY conf/csrDetails.conf /etc/nginx/
 
 RUN  bash /etc/nginx/generateSSL.sh
 
 ENV DEBIAN_FRONTEND=dialog
 
-# CMD ["nginx", "-t"]
-CMD ["nginx", "-g", "daemon off;"]
+#[BONUS] to serve the static webpage
+# RUN mkdir -p /var/www/html/static
+COPY static-bonus /
+COPY tools/init.sh / 
+
+CMD ["bash", "init.sh"]
