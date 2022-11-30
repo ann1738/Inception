@@ -81,25 +81,44 @@ services:
     volumes:
       - www-duck-data:/var/www/html
     ports:
-      - "21:21"
-    command: "'tail -f /dev/null'"
+      - "20-21:20-21"
+    command: "'vsftpd'"
     entrypoint: "/bin/sh -c"
+
+# devcontainer
+  dev:
+    build: ./requirements/bonus/dev/
+    restart: on-failure
+    command: "systemd"
+    env_file:
+      - .env
+    volumes:
+      - ${WORK_DIR}:/home/devcontainer/
 
 networks:
   duck: #frontend
-  turtle: # backend
-  bonus: #redis and wordpress
+  turtle: #backend
+  bonus: #bonus redis
 
 volumes:
+# WP website files volume
   www-duck-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/ann/data/www_volume
+# Database 
   db-duck-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/ann/data/db_volume
+# # bonus volumes
+#   dev-data:
+#     driver: local
+#     driver_opts:
+#       o: bind
+#       type: none
+#       device: /home/ann/data/dev_volume
