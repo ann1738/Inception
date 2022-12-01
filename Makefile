@@ -57,13 +57,13 @@ create_www_vol_directory:
 	@mkdir -p ${WWW_VOLUME_PATH}
 
 remove_www_vol_directory:
-	sudo rm -rf ${WWW_VOLUME_PATH}/*
+	sudo rm -rf ${WWW_VOLUME_PATH}
 
 create_db_vol_directory:
 	@mkdir -p ${DB_VOLUME_PATH}
 
 remove_db_vol_directory:
-	sudo rm -rf ${DB_VOLUME_PATH}/*
+	sudo rm -rf ${DB_VOLUME_PATH}
 
 #Utility rules
 add_domain:

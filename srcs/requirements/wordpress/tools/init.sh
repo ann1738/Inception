@@ -27,8 +27,8 @@
 	wp theme  activate twentytwentytwo --allow-root
 
 #	Bonus
-	# if [[ $1 == "bonus" ]]; then
-#		Redis install and configuration
+	if [[ $1 == "bonus" ]]; then
+		# Redis install and configuration
 		# if [[ $(wp plugin is-installed redis-cache --allow-root) != 0 ]]; then
 			# wp config set WP_REDIS_PATH --raw "__DIR__ . '/../redis.sock'" --allow-root
 			# wp config set WP_REDIS_SCHEME "unix" --allow-root
@@ -39,7 +39,7 @@
 		if [[ $(ls /usr/share/adminer/ | grep adminer.php) != 0 ]]; then
 			mv /usr/share/adminer/adminer.php /var/www/html/adminer/
 		fi
-	# fi
+	fi
 
 #	Update all plugins
 	wp plugin update --all --allow-root
