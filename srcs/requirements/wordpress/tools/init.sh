@@ -15,7 +15,11 @@
 	if [[ $? -ne 0 ]]; then
 		wp core install --allow-root --url=anasr.42.fr --title="$TITLE" --admin_user=$ADMIN_USER --admin_password=$ADMIN_PASS --admin_email=$ADMIN_EMAIL
 #		Config required to allow media uploads 
-		chown -R www-data /var/www/html/wp-content/uploads
+		# chown -R www-data /var/www/html/wp-content/uploads
+		chown www-data:www-data  -R * # Let Apache be owner
+		find . -type d -exec chmod 755 {} \;  # Change directory permissions rwxr-xr-x
+		find . -type f -exec chmod 644 {} \;  # Change file permissions rw-r--r--
+
 	fi
 
 #	Create another user with a default subscriber role
@@ -23,23 +27,29 @@
 		wp user create --allow-root $NORMAL_USER $NORMAL_EMAIL --user_pass=$NORMAL_PASS
 	fi
 
-#	Change the theme
-	wp theme  activate twentytwentytwo --allow-root
+#	Change the theme (after checking if it was active)
+	wp theme is-active twentytwentytwo --allow-root || wp theme activate twentytwentytwo --allow-root
 
 #	Bonus
 	if [[ $1 == "bonus" ]]; then
 		# Redis install and configuration
-		# if [[ $(wp plugin is-installed redis-cache --allow-root) != 0 ]]; then
-			# wp config set WP_REDIS_PATH --raw "__DIR__ . '/../redis.sock'" --allow-root
-			# wp config set WP_REDIS_SCHEME "unix" --allow-root
-			# wp plugin install redis-cache --activate --allow-root
-		# fi
+		if [[ $(wp plugin is-installed redis-cache --allow-root) != 0 ]]; then
+			wp config set WP_REDIS_HOST --raw "'redis'" --allow-root
+			wp config set WP_REDIS_PORT --raw "'6379'" --allow-root
+			# wp config set WP_REDIS_SCHEME --raw "'unix'" --allow-root
+			wp config set WP_CACHE_KEY_SALT --raw "'anasr.42.fr'" --allow-root
+			wp config set FS_METHOD --raw "'direct'" --allow-root
+			wp plugin install redis-cache --activate --allow-root
+			# maybe wee need to install phpredis
+		fi
 #		Move adminer.php to the root of website files
 		mkdir -p /var/www/html/adminer
 		if [[ $(ls /usr/share/adminer/ | grep adminer.php) != 0 ]]; then
 			mv /usr/share/adminer/adminer.php /var/www/html/adminer/
 		fi
+		# chown -R www-data /var/www/html/wp-content/uploads
 	fi
+	chown -R www-data /var/www/html/wp-content/
 
 #	Update all plugins
 	wp plugin update --all --allow-root
