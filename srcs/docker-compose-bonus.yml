@@ -105,6 +105,24 @@ services:
       - wordpress
     entrypoint: "/bin/sh -c"
 
+# redis-commander
+  redis-commander:
+    build: ./requirements/bonus/redis-commander/
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    networks:
+      - bonus
+    environment:
+      - REDIS_HOSTS=local:srcs-redis-1:6379
+      - HTTP_USER=urnotgonnaguess
+      - HTTP_PASS=udid
+    command: "'redis-commander --redis-host='srcs-redis-1' --redis-port=6379 \
+               --http-u=urnotgonnaguess --http-p=udid'"
+    entrypoint: "/bin/sh -c"
+    depends_on:
+      - redis
+
 # devcontainer
   dev:
     build: ./requirements/bonus/dev/
