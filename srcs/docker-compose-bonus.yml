@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
 # NGINX
@@ -70,7 +70,12 @@ services:
       - 6379
     networks:
       - bonus
-    command: "'redis-server /etc/redis/redis.conf && tail -f /dev/null'"
+    command: "'echo \"Initializing redis\" && \
+               sed -i \"s/bind 127.0.0.1 ::1/#bind 127.0.0.1 ::1/g\" /etc/redis/redis.conf && \
+               sed -i \"s/protected-mode yes/protected-mode no/g\" /etc/redis/redis.conf && \
+               redis-server --protected-mode no'" #" && \
+              # redis-server /etc/redis/redis.conf && \
+              # tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - wordpress
@@ -113,7 +118,7 @@ services:
 networks:
   duck: #frontend
   turtle: #backend
-  # bonus: #bonus redis
+  bonus: #bonus redis
 
 volumes:
 # WP website files volume
