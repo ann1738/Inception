@@ -39,12 +39,16 @@
 			# wp config set WP_REDIS_SCHEME --raw "'unix'" --allow-root
 			wp config set WP_CACHE_KEY_SALT --raw "'anasr.42.fr'" --allow-root
 			wp config set FS_METHOD --raw "'direct'" --allow-root
-			wp plugin install redis-cache --activate --allow-root
+			wp plugin install redis-cache --allow-root
 			# maybe wee need to install phpredis
+		fi
+		if [[ $(wp plugin is-active redis-cache --allow-root) != 0 ]]; then
+			wp plugin activate redis-cache --allow-root
+			wp redis enable --allow-root
 		fi
 #		Move adminer.php to the root of website files
 		mkdir -p /var/www/html/adminer
-		if [[ $(ls /usr/share/adminer/ | grep adminer.php) != 0 ]]; then
+		if [[ $(ls /var/www/html/adminer/ | grep adminer.php) != 0 ]]; then
 			mv /usr/share/adminer/adminer.php /var/www/html/adminer/
 		fi
 		# chown -R www-data /var/www/html/wp-content/uploads
