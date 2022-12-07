@@ -23,7 +23,7 @@ BONUS_DOCKER_COMPOSE_FILE_PATH = ./srcs/docker-compose-bonus.yml
 FTP_CONTAINER_DEFAULT_NAME = srcs-ftp-1
 REDIS_CONTAINER_DEFAULT_NAME = srcs-redis-1
 DEV_CONTAINER_DEFAULT_NAME = srcs-dev-1
-
+REDIS_COMMANDER_CONTAINER_DEFAULT_NAME = srcs-redis-commander-1
 all: start
 
 #Operation rules
@@ -115,12 +115,6 @@ re_bonus: end_bonus clear_all_bonus start_verbose_bonus
 
 res_bonus: end_bonus clear_all_bonus build_bonus start_verbose_bonus
 
-# create_dev_vol_directory:
-# 	@mkdir -p ${DEV_VOLUME_PATH}
-
-# remove_dev_vol_directory:
-# 	sudo rm -rf ${DEV_VOLUME_PATH}/*
-
 #Bonus container access rules
 ftp-exec:
 	docker exec -it ${FTP_CONTAINER_DEFAULT_NAME} bash
@@ -131,15 +125,11 @@ redis-exec:
 dev-exec:
 	docker exec -it ${DEV_CONTAINER_DEFAULT_NAME} bash
 
-redis-commander:
-	docker run --name my-redis-commander -p 8081:8081 --env REDIS_HOSTS=local:${REDIS_CONTAINER_DEFAULT_NAME}:6379 --network=srcs_bonus --restart always -d rediscommander/redis-commander:latest
+redis-commander-exec:
+	docker exec -it ${REDIS_COMMANDER_CONTAINER_DEFAULT_NAME} bash
 
-redis-commander-rm:
-	docker container rm -f my-redis-commander 
+open-redis-commander:
+	xdg-open "http://anasr.42.fr:8081"
 
 watch-mysql-queries:
 	docker exec -it ${MARIADB_CONTAINER_DEFAULT_NAME} mysqladmin -uwp-db-user -p -hmariadb -i 1 processlist;
-
-# poratainer:
-# 	docker volume create portainer_data 
-# 	docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
