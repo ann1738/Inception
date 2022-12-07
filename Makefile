@@ -133,3 +133,6 @@ open-redis-commander:
 
 watch-mysql-queries:
 	docker exec -it ${MARIADB_CONTAINER_DEFAULT_NAME} mysqladmin -uwp-db-user -p -hmariadb -i 1 processlist;
+
+get-ftp-container-ip:
+	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${FTP_CONTAINER_DEFAULT_NAME}
