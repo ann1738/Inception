@@ -1,3 +1,4 @@
+# DEV IMAGE
 FROM debian:buster
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -22,15 +23,11 @@ RUN apt-get install	 -y  wget \
 	apt-get autoclean -y && \
 	apt-get autoremove -y
 
-#Change the root to the dev container
-
 #Devcontainer working directory
 RUN mkdir -p /home/devcontainer
 
 #Oh My Bash
 RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-
-ARG WORK_DIR
 
 WORKDIR /home/devcontainer
 
