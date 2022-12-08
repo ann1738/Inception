@@ -65,7 +65,7 @@ services:
     command: "'mysqld'"
     entrypoint: "/bin/sh -c"
 
-# redis
+# Redis
   redis:
     build: ./redis/
     image: redis
@@ -74,13 +74,14 @@ services:
       - 6379
     networks:
       - bonus
-    command: "'echo \"Initializing redis\" && \
-               sed -i \"s/bind 127.0.0.1 ::1/#bind 127.0.0.1 ::1/g\" /etc/redis/redis.conf && \
-               sed -i \"s/protected-mode yes/protected-mode no/g\" /etc/redis/redis.conf && \
-               redis-server --protected-mode no'" #" && \
+    command: "'bash init.sh'"
     entrypoint: "/bin/sh -c"
+    # command: "'echo \"Initializing redis\" && \
+    #            sed -i \"s/bind 127.0.0.1 ::1/#bind 127.0.0.1 ::1/g\" /etc/redis/redis.conf && \
+    #            sed -i \"s/protected-mode yes/protected-mode no/g\" /etc/redis/redis.conf && \
+    #            redis-server --protected-mode no'" #" && \
 
-# ftp service
+# Ftp
   ftp:
     build:
       context: ./ftp/
@@ -98,11 +99,11 @@ services:
       - "990:990"
       - "65000-65042:65000-65042"
     command: "'vsftpd'"
+    entrypoint: "/bin/sh -c"
     depends_on:
       - wordpress
-    entrypoint: "/bin/sh -c"
 
-# redis-commander
+# Redis-commander
   redis-commander:
     build: ./redis-commander/
     image: redis-commander
@@ -111,10 +112,6 @@ services:
       - "8081:8081"
     networks:
       - bonus
-    # environment:
-    #   - REDIS_HOSTS=local:bonus-redis-1:6379
-    #   - HTTP_USER=urnotgonnaguess
-    #   - HTTP_PASS=udid
     command: "'redis-commander --redis-host='bonus-redis-1' --redis-port=6379 \
                --http-u=urnotgonnaguess --http-p=udid'"
     entrypoint: "/bin/sh -c"
