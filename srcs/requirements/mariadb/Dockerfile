@@ -1,4 +1,4 @@
-#MARIADB DOCKERFILE
+# MARIADB DOCKERFILE
 FROM debian:buster
 
 ARG MARIADB_DATABASE
@@ -13,7 +13,6 @@ RUN apt-get -y update \
 							ca-certificates \
 							dialog
 
-#To configure the server to connect with the wordpress container
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 
 RUN service mysql start && \
