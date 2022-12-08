@@ -76,10 +76,6 @@ services:
       - bonus
     command: "'bash init.sh'"
     entrypoint: "/bin/sh -c"
-    # command: "'echo \"Initializing redis\" && \
-    #            sed -i \"s/bind 127.0.0.1 ::1/#bind 127.0.0.1 ::1/g\" /etc/redis/redis.conf && \
-    #            sed -i \"s/protected-mode yes/protected-mode no/g\" /etc/redis/redis.conf && \
-    #            redis-server --protected-mode no'" #" && \
 
 # Ftp
   ftp:
@@ -108,12 +104,17 @@ services:
     build: ./redis-commander/
     image: redis-commander
     restart: on-failure
+    env_file:
+      - .env
     ports:
       - "8081:8081"
     networks:
       - bonus
-    command: "'redis-commander --redis-host='bonus-redis-1' --redis-port=6379 \
-               --http-u=urnotgonnaguess --http-p=udid'"
+    command: "'redis-commander \
+               --redis-host=${REDIS_COMMANDER_HOST} \
+               --redis-port=${REDIS_COMMANDER_PORT} \
+               --http-u=${REDIS_COMMANDER_USER} \
+               --http-p=${REDIS_COMMANDER_PASS}'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - redis
