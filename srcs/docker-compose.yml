@@ -30,9 +30,9 @@ services:
       - .env
     expose:
       - 9000
-  command: "' /bin/sleep 5 && \
-              bash init.sh && \
-              php-fpm7.3 --nodaemonize -R'"
+    command: "'/bin/sleep 5 && \
+               bash init.sh && \
+               php-fpm7.3 --nodaemonize -R'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - mariadb
