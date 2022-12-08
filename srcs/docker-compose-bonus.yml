@@ -34,8 +34,7 @@ services:
     expose:
       - 9000
     command:
-      "'  /bin/sleep 5 && \
-          bash init.sh bonus && \ 
+      "'  bash init.sh bonus && \ 
           php-fpm7.3 --nodaemonize -R'"
     entrypoint: "/bin/sh -c"
     depends_on:
@@ -79,8 +78,6 @@ services:
               # redis-server /etc/redis/redis.conf && \
               # tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
-    depends_on:
-      - wordpress
 
 # ftp service
   ftp:

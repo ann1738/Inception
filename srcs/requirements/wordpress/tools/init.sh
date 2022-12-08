@@ -51,9 +51,10 @@
 		if [[ $(ls /var/www/html/adminer/ | grep adminer.php) != 0 ]]; then
 			mv /usr/share/adminer/adminer.php /var/www/html/adminer/
 		fi
-		# chown -R www-data /var/www/html/wp-content/uploads
+		# Making the directory group writeable such that ftp user (in the same grop) can change files
+		chmod -R g+w /var/www/html
 	fi
-	chown -R www-data /var/www/html/wp-content/
+	chown -R www-data:www-data /var/www/html
 
 #	Update all plugins
 	wp plugin update --all --allow-root
