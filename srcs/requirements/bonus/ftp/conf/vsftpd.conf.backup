@@ -164,7 +164,7 @@ pasv_max_port=42420###
 userlist_enable=YES###
 userlist_file=/etc/vsftpd.userlist###
 userlist_deny=NO###
-srcs/requirements/bonus/ftp/conf/vsftpd.conf
+
 # Change the default directory of ftp user
 local_root=/var/www/html###
 user_sub_token=$FTP_USER###
