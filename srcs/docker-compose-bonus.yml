@@ -97,13 +97,8 @@ services:
     ports:
       - "20-21:20-21"
       - "990:990"
-      - "42000-42420:42000-42420"
-    command: "'/bin/sleep 10 && \
-               chown -R jelly:www-data /var/www/html &&\
-               chown -R www-data:www-data /var/www/html/wp-content &&\
-               chmod -R g+w /var/www/html/wp-content &&\
-               echo \"Initializing ftp...\" && \
-               vsftpd'"
+      - "65000-65042:65000-65042"
+    command: "'vsftpd'"
     depends_on:
       - wordpress
     entrypoint: "/bin/sh -c"
