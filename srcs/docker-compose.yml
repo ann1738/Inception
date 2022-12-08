@@ -1,4 +1,4 @@
-version: '3'
+version: "3.9"
 
 services:
 # NGINX
@@ -11,6 +11,8 @@ services:
       - duck
     volumes:
       - www-duck-data:/var/www/html
+    command: "'bash init.sh'"
+    entrypoint: "/bin/sh -c"
     depends_on:
       - wordpress
 
@@ -28,10 +30,9 @@ services:
       - .env
     expose:
       - 9000
-    command:
-      "'  /bin/sleep 5 && \
-          bash init.sh && \ 
-          php-fpm7.3 --nodaemonize -R'"
+  command: "' /bin/sleep 5 && \
+              bash init.sh && \
+              php-fpm7.3 --nodaemonize -R'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - mariadb
@@ -44,6 +45,7 @@ services:
         MARIADB_DATABASE: ${MARIADB_DATABASE}
         MARIADB_USER: ${MARIADB_USER}
         MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+        MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     restart: on-failure
     networks:
       - turtle
@@ -66,10 +68,10 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /home/ann/data/www_volume
+      device: /home/${USER}/data/www_volume
   db-duck-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: /home/ann/data/db_volume
+      device: /home/${USER}/data/db_volume
