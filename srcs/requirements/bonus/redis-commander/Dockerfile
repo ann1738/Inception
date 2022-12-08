@@ -1,3 +1,4 @@
+# REDIS-COMMANDER DOCKERFILE
 FROM debian:buster
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -6,10 +7,15 @@ RUN apt-get update -y && \
 	apt-get install -y dialog \
 					   ca-certificates \
 					   npm \
-					   nodejs && \
-	npm install -g redis-commander
-RUN apt-get install -y curl wget 
-RUN npm install -g n && \
+					   nodejs \
+					   curl \
+					   wget
+
+RUN \
+#	Install redis-commander
+	npm install -g redis-commander && \
+#	Install newer nodejs version
+	npm install -g n && \
 	n lts
 
 ENV DEBIAN_FRONTEND=dialog
