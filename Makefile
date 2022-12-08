@@ -15,15 +15,18 @@ CUSTOM_ALIASES_SCRIPT_PATH = ./srcs/requirements/tools/customAliases.sh
 
 WWW_VOLUME_PATH = /home/${USER}/data/www_volume
 DB_VOLUME_PATH = /home/${USER}/data/db_volume
-# DEV_VOLUME_PATH = /home/${USER}/data/dev_volume
 
 #Bonus variables
-BONUS_DOCKER_COMPOSE_FILE_PATH = ./srcs/docker-compose-bonus.yml
+BONUS_DOCKER_COMPOSE_FILE_PATH = ./srcs/requirements/bonus/docker-compose-bonus.yml
 
-FTP_CONTAINER_DEFAULT_NAME = srcs-ftp-1
-REDIS_CONTAINER_DEFAULT_NAME = srcs-redis-1
-DEV_CONTAINER_DEFAULT_NAME = srcs-dev-1
-REDIS_COMMANDER_CONTAINER_DEFAULT_NAME = srcs-redis-commander-1
+BONUS_NGINX_CONTAINER_DEFAULT_NAME = bonus-nginx-1
+BONUS_WORDPRESS_CONTAINER_DEFAULT_NAME = bonus-wordpress-1
+BONUS_MARIADB_CONTAINER_DEFAULT_NAME = bonus-mariadb-1
+BONUS_FTP_CONTAINER_DEFAULT_NAME = bonus-ftp-1
+BONUS_REDIS_CONTAINER_DEFAULT_NAME = bonus-redis-1
+BONUS_DEV_CONTAINER_DEFAULT_NAME = bonus-dev-1
+BONUS_REDIS_COMMANDER_CONTAINER_DEFAULT_NAME = bonus-redis-commander-1
+
 all: start
 
 #Operation rules
@@ -96,7 +99,7 @@ aliases:
 start_bonus: add_domain create_volume_directories
 	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} up  --detach
 
-start_verbose_bonus: add_domain create_volume_directories #create_dev_vol_directory
+start_verbose_bonus: add_domain create_volume_directories
 	docker compose --file ${BONUS_DOCKER_COMPOSE_FILE_PATH} up
 
 build_bonus:
@@ -109,30 +112,41 @@ up_bonus: start_verbose_bonus
 
 down_bonus: end_bonus
 
-clear_all_bonus: containers_rm volumes_rm networks_rm remove_volume_directories #remove_dev_vol_directory
+re_bonus: end_bonus clear_all start_verbose_bonus
 
-re_bonus: end_bonus clear_all_bonus start_verbose_bonus
-
-res_bonus: end_bonus clear_all_bonus build_bonus start_verbose_bonus
+res_bonus: end_bonus clear_all build_bonus start_verbose_bonus
 
 #Bonus container access rules
-ftp-exec:
-	docker exec -it ${FTP_CONTAINER_DEFAULT_NAME} bash
+nginx-exec-bonus:
+	docker exec -it ${BONUS_NGINX_CONTAINER_DEFAULT_NAME} bash
 
-redis-exec:
-	docker exec -it ${REDIS_CONTAINER_DEFAULT_NAME} bash
+wordpress-exec-bonus:
+	docker exec -it ${BONUS_WORDPRESS_CONTAINER_DEFAULT_NAME} bash
 
-dev-exec:
-	docker exec -it ${DEV_CONTAINER_DEFAULT_NAME} bash
+mariadb-exec-bonus:
+	docker exec -it ${BONUS_MARIADB_CONTAINER_DEFAULT_NAME} bash
 
-redis-commander-exec:
-	docker exec -it ${REDIS_COMMANDER_CONTAINER_DEFAULT_NAME} bash
+ftp-exec-bonus:
+	docker exec -it ${BONUS_FTP_CONTAINER_DEFAULT_NAME} bash
+
+redis-exec-bonus:
+	docker exec -it ${BONUS_REDIS_CONTAINER_DEFAULT_NAME} bash
+
+dev-exec-bonus:
+	docker exec -it ${BONUS_DEV_CONTAINER_DEFAULT_NAME} bash
+
+redis-commander-exec-bonus:
+	docker exec -it ${BONUS_REDIS_COMMANDER_CONTAINER_DEFAULT_NAME} bash
+
+#Bonus miscellaneous rules
+watch-mysql-queries:
+	docker exec -it ${BONUS_MARIADB_CONTAINER_DEFAULT_NAME} mysqladmin -uwp-db-user -p -hmariadb -i 1 processlist;
+
+get-ftp-container-ip:
+	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${BONUS_FTP_CONTAINER_DEFAULT_NAME}
 
 open-redis-commander:
 	xdg-open "http://anasr.42.fr:8081"
 
-watch-mysql-queries:
-	docker exec -it ${MARIADB_CONTAINER_DEFAULT_NAME} mysqladmin -uwp-db-user -p -hmariadb -i 1 processlist;
-
-get-ftp-container-ip:
-	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${FTP_CONTAINER_DEFAULT_NAME}
+open-ftp-client: get-ftp-container-ip
+	filezilla

@@ -3,7 +3,7 @@ version: '3.9'
 services:
 # NGINX
   nginx:
-    build: ./requirements/nginx/
+    build: ./../nginx/
     image: nginx
     restart: on-failure
     ports:
@@ -20,7 +20,7 @@ services:
 # WordPress
   wordpress:
     build:
-      context: ./requirements/wordpress/
+      context: ./../wordpress/
       args:
         BONUS: one
     image: wordpress
@@ -47,7 +47,7 @@ services:
 # Mariadb
   mariadb:
     build:
-      context: ./requirements/mariadb/
+      context: ./../mariadb/
       args:
         MARIADB_DATABASE: ${MARIADB_DATABASE}
         MARIADB_USER: ${MARIADB_USER}
@@ -68,7 +68,7 @@ services:
 
 # redis
   redis:
-    build: ./requirements/bonus/redis/
+    build: ./redis/
     image: redis
     restart: on-failure
     expose:
@@ -79,14 +79,12 @@ services:
                sed -i \"s/bind 127.0.0.1 ::1/#bind 127.0.0.1 ::1/g\" /etc/redis/redis.conf && \
                sed -i \"s/protected-mode yes/protected-mode no/g\" /etc/redis/redis.conf && \
                redis-server --protected-mode no'" #" && \
-              # redis-server /etc/redis/redis.conf && \
-              # tail -f /dev/null'"
     entrypoint: "/bin/sh -c"
 
 # ftp service
   ftp:
     build:
-      context: ./requirements/bonus/ftp/
+      context: ./ftp/
       args:
         FTP_USER: ${FTP_USER}
         FTP_PASS: ${FTP_PASS}
@@ -107,18 +105,18 @@ services:
 
 # redis-commander
   redis-commander:
-    build: ./requirements/bonus/redis-commander/
+    build: ./redis-commander/
     image: redis-commander
     restart: on-failure
     ports:
       - "8081:8081"
     networks:
       - bonus
-    environment:
-      - REDIS_HOSTS=local:srcs-redis-1:6379
-      - HTTP_USER=urnotgonnaguess
-      - HTTP_PASS=udid
-    command: "'redis-commander --redis-host='srcs-redis-1' --redis-port=6379 \
+    # environment:
+    #   - REDIS_HOSTS=local:bonus-redis-1:6379
+    #   - HTTP_USER=urnotgonnaguess
+    #   - HTTP_PASS=udid
+    command: "'redis-commander --redis-host='bonus-redis-1' --redis-port=6379 \
                --http-u=urnotgonnaguess --http-p=udid'"
     entrypoint: "/bin/sh -c"
     depends_on:
@@ -126,7 +124,7 @@ services:
 
 # devcontainer
   dev:
-    build: ./requirements/bonus/dev/
+    build: ./dev/
     image: dev
     restart: on-failure
     command: "systemd"
@@ -141,14 +139,12 @@ networks:
   bonus: #bonus redis
 
 volumes:
-# WP website files volume
   www-duck-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/${USER}/data/www_volume
-# Database 
   db-duck-data:
     driver: local
     driver_opts:
