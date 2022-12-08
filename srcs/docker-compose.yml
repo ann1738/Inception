@@ -27,7 +27,6 @@ services:
       - turtle
     volumes:
       - www-duck-data:/var/www/html
-      - db-duck-data:/var/lib/mysql
     env_file:
       - .env
     expose:
