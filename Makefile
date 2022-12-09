@@ -11,7 +11,6 @@ ADD_DOMAIN_SCRIPT_PATH = ./srcs/requirements/tools/addDomain.sh
 REMOVE_CONTAINERS_SCRIPT_PATH = ./srcs/requirements/tools/removeContainers.sh
 REMOVE_NETWORKS_SCRIPT_PATH = ./srcs/requirements/tools/removeNetworks.sh
 REMOVE_VOLUMES_SCRIPT_PATH = ./srcs/requirements/tools/removeVolumes.sh
-CUSTOM_ALIASES_SCRIPT_PATH = ./srcs/requirements/tools/customAliases.sh
 
 WWW_VOLUME_PATH = /home/${USER}/data/www_volume
 DB_VOLUME_PATH = /home/${USER}/data/db_volume
@@ -90,10 +89,6 @@ wordpress-exec:
 
 mariadb-exec:
 	docker exec -it ${MARIADB_CONTAINER_DEFAULT_NAME} bash
-
-#Custom rules
-aliases:
-	@bash ./srcs/requirements/tools/customAliases.sh
 
 #Bonus rules
 start_bonus: add_domain create_volume_directories
