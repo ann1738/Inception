@@ -17,7 +17,8 @@ if [[ $? -ne 0 ]]; then
 fi
 
 #	Create another user with a default subscriber role
-if [[ $(wp user list --allow-root | grep $NORMAL_USER) != 0 ]]; then
+wp user list --allow-root | grep $NORMAL_USER &> /dev/null
+if [[ $? -ne 0 ]]; then
 	wp user create --allow-root $NORMAL_USER $NORMAL_EMAIL --user_pass=$NORMAL_PASS
 fi
 
