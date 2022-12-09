@@ -4,7 +4,7 @@ services:
 # NGINX
   nginx:
     build: ./../nginx/
-    image: nginx
+    image: nginx:mine
     restart: on-failure
     ports:
       - "443:443"
@@ -23,7 +23,7 @@ services:
       context: ./../wordpress/
       args:
         BONUS: one
-    image: wordpress
+    image: wordpress:mine
     restart: on-failure
     networks:
       - duck
@@ -52,7 +52,7 @@ services:
         MARIADB_USER: ${MARIADB_USER}
         MARIADB_PASSWORD: ${MARIADB_PASSWORD}
         MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-    image: mariadb
+    image: mariadb:mine
     restart: on-failure
     networks:
       - turtle
@@ -68,7 +68,7 @@ services:
 # Redis
   redis:
     build: ./redis/
-    image: redis
+    image: redis:mine
     restart: on-failure
     expose:
       - 6379
@@ -84,7 +84,7 @@ services:
       args:
         FTP_USER: ${FTP_USER}
         FTP_PASS: ${FTP_PASS}
-    image: ftp
+    image: ftp:mine
     restart: on-failure
     env_file:
       - .env
@@ -102,7 +102,7 @@ services:
 # Redis-commander
   redis-commander:
     build: ./redis-commander/
-    image: redis-commander
+    image: redis-commander:mine
     restart: on-failure
     env_file:
       - .env
@@ -122,7 +122,7 @@ services:
 # devcontainer
   dev:
     build: ./dev/
-    image: dev
+    image: dev:mine
     restart: on-failure
     command: "systemd"
     env_file:

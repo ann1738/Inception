@@ -4,7 +4,7 @@ services:
 # NGINX
   nginx:
     build: ./requirements/nginx/
-    image: nginx
+    image: nginx:mine
     restart: on-failure
     ports:
       - "443:443"
@@ -17,10 +17,10 @@ services:
     depends_on:
       - wordpress
 
-# WordPress
+  # WordPress
   wordpress:
     build: ./requirements/wordpress/
-    image: wordpress
+    image: wordpress:mine
     restart: on-failure
     networks:
       - duck
@@ -32,13 +32,13 @@ services:
     expose:
       - 9000
     command: "'/bin/sleep 5 && \
-               bash init.sh && \
-               php-fpm7.3 --nodaemonize -R'"
+      bash init.sh && \
+      php-fpm7.3 --nodaemonize -R'"
     entrypoint: "/bin/sh -c"
     depends_on:
       - mariadb
 
-# Mariadb
+  # Mariadb
   mariadb:
     build:
       context: ./requirements/mariadb/
@@ -47,7 +47,7 @@ services:
         MARIADB_USER: ${MARIADB_USER}
         MARIADB_PASSWORD: ${MARIADB_PASSWORD}
         MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-    image: mariadb
+    image: mariadb:mine
     restart: on-failure
     networks:
       - turtle
