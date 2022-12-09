@@ -19,10 +19,7 @@ services:
 
 # WordPress
   wordpress:
-    build:
-      context: ./../wordpress/
-      args:
-        BONUS: one
+    build: ./../wordpress/
     image: wordpress:mine
     restart: on-failure
     networks:
